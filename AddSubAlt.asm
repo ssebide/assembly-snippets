@@ -1,21 +1,24 @@
-TITLE Add and Subtract 
+; Name: AddSubAlt.asm
+; Purpose: Adds and subtracts 32-bit integers using immediate values
+; Date: 2026-02-09
+; Author: Johnson
+; Environment: MASM / Windows
 
-; this program adds and subtracts 32-bit integers without any abstractions
+.386
+.model flat, stdcall
+.stack 4096
 
-.386             ;identifies the minimum CPU required for this program.(intel386)
-.model flat, stdcall ;.model isentifies segmentation model used by the program, identifies convention for parsing parameters to procedures, flat tells assembler to generate code fora protected mode program, stdcall enables calling of MSWindow functions
-.stack 4096  
-ExitProcess PROTO, dwExitCode:DWORD ;declares prototypes for procedures used by this program. Exit process halts program
-DumpRegs PROTO ;displays the registers.
+ExitProcess PROTO, dwExitCode:DWORD
+DumpRegs PROTO 
 
 .code
 main PROC
-    mov eax,10000h ; EAX = 10000h
-    add eax,40000h ; EAX = 50000h
-    sub eax,20000h ; EAX = 30000h
-    call DumpRegs
+    mov     eax, 10000h     ; EAX = 10000h
+    add     eax, 40000h     ; EAX = 50000h
+    sub     eax, 20000h     ; EAX = 30000h
+    
+    call    DumpRegs        ; Display registers
 
-    INVOKE ExitProcess,0
-
+    INVOKE  ExitProcess, 0
 main ENDP
 END main

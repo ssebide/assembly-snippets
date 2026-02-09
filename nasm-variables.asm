@@ -1,22 +1,31 @@
-choice		DB	'y'
-number		DW	12345
-neg_number	DW	-12345
-big_number	DQ	123456789
-real_number1	DD	1.234
-real_number2	DQ	123.456
+; Name: nasm-variables.asm
+; Purpose: Demonstrates variable definitions in NASM
+; Date: 2026-02-09
+; Author: Johnson
+; Environment: NASM / Linux (32-bit syscalls)
 
-section .text
-   global _start          ;must be declared for linker (gcc)
-	
-_start:                   ;tell linker entry point
-   mov	edx,1		  ;message length
-   mov	ecx,choice        ;message to write
-   mov	ebx,1		  ;file descriptor (stdout)
-   mov	eax,4		  ;system call number (sys_write)
-   int	0x80		  ;call kernel
-
-   mov	eax,1		  ;system call number (sys_exit)
-   int	0x80		  ;call kernel
+SYS_EXIT  equ 1
+SYS_WRITE equ 4
+STDOUT    equ 1
 
 section .data
-choice DB 'y'
+    choice        db 'y'
+    number        dw 12345
+    neg_number    dw -12345
+    big_number    dq 123456789
+    real_number1  dd 1.234
+    real_number2  dq 123.456
+
+section .text
+    global _start
+
+_start:
+    mov     eax, SYS_WRITE
+    mov     ebx, STDOUT
+    mov     ecx, choice
+    mov     edx, 1
+    int     0x80
+
+    mov     eax, SYS_EXIT
+    xor     ebx, ebx
+    int     0x80

@@ -1,40 +1,46 @@
-section	.text
-   global _start   ;must be declared for linker (ld)
-	
-_start:	
- 		
-   mov  eax,3      ;number bytes to be summed 
-   mov  ebx,0      ;EBX will store the sum
-   mov  ecx, x     ;ECX will point to the current element to be summed
+; Name: nasm-arrays.asm
+; Purpose: Demonstrates iterating over an array and summing elements in NASM
+; Date: 2026-02-09
+; Author: Johnson
+; Environment: NASM / Linux (32-bit syscalls)
 
-top:  add  ebx, [ecx]
+SYS_EXIT  equ 1
+SYS_WRITE equ 4
+STDOUT    equ 1
 
-   add  ecx,1      ;move pointer to next element
-   dec  eax        ;decrement counter
-   jnz  top        ;if counter not 0, then loop again
+section .data
+    global x
+    x:      db  2, 4, 3    ; array of bytes
 
-done: 
+    sum:    db  0
 
-   add   ebx, '0'
-   mov  [sum], ebx ;done, store result in "sum"
+section .text
+    global _start
+
+_start:
+    mov     eax, 3          ; number of bytes to be summed (counter)
+    xor     ebx, ebx        ; EBX will store the sum (clear to 0)
+    mov     ecx, x          ; ECX points to the current element
+
+top:
+    movzx   edx, byte [ecx] ; Load byte into 32-bit logic
+    add     ebx, edx        ; Add to sum
+    
+    inc     ecx             ; move pointer to next element
+    dec     eax             ; decrement counter
+    jnz     top             ; if counter not 0, then loop again
+
+done:
+    add     ebx, '0'        ; convert raw integer to ASCII digit (simplistic, works for small sum < 10)
+    mov     [sum], bl       ; store lower byte of result in "sum"
 
 display:
+    mov     eax, SYS_WRITE
+    mov     ebx, STDOUT
+    mov     ecx, sum
+    mov     edx, 1
+    int     0x80
 
-   mov  edx,1      ;message length
-   mov  ecx, sum   ;message to write
-   mov  ebx, 1     ;file descriptor (stdout)
-   mov  eax, 4     ;system call number (sys_write)
-   int  0x80       ;call kernel
-	
-   mov  eax, 1     ;system call number (sys_exit)
-   int  0x80       ;call kernel
-
-section	.data
-global x
-x:    
-   db  2
-   db  4
-   db  3
-
-sum: 
-   db  0
+    mov     eax, SYS_EXIT
+    xor     ebx, ebx
+    int     0x80
